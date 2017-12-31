@@ -1,14 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package programming2_blackjack;
 
+import java.util.ArrayList;
+
 /**
- *
- * @author Hattori
+ * Class Deck simulates the deck of cards that are needed for card games
+ * @author Daniel Carey
  */
 public class Deck {
+    private ArrayList<Card> cardList;
     
+    /**
+     * Constructor to initialise an empty collection of cards
+     */
+    public Deck(){
+        ArrayList<Card> cardList = new ArrayList<>();
+        this.cardList = cardList;
+    }
+    
+    /**
+     * Method to shuffle a collection of cards 
+     * @param list arrayList containing card object
+     */
+    public static void shuffle(ArrayList list){
+        
+    }
+    
+    public static 
 }

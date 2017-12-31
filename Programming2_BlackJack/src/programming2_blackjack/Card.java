@@ -1,6 +1,8 @@
 package programming2_blackjack;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -107,16 +109,15 @@ public class Card implements Serializable, Comparable<Card> {
 //        else if (other.rank.ordinal() > this.rank.ordinal()){
 //            return 1;
 //        }
-          int i = Integer.compare(other.rank.ordinal(), this.rank.ordinal());
-        if (i != 0){
-            return i;
+        int i = Integer.compare(other.rank.ordinal(), this.rank.ordinal());
+          
+        if (i == 0){
+            return Integer.compare(other.suit.ordinal(), this.suit.ordinal());
         }
-        return Integer.compare(other.suit.ordinal(), this.suit.ordinal());
+        return i;
         
     }
     
-    
-    //*********************TESTING NEEDED***********************
     //custom toString method
     @Override
     public String toString() {
@@ -124,7 +125,6 @@ public class Card implements Serializable, Comparable<Card> {
     }
     
     /** 
-     * ********************TESTING NEEDED***********************
      * @return the suit of the card 
      */
     public Suit getSuit(){
@@ -132,7 +132,6 @@ public class Card implements Serializable, Comparable<Card> {
     }
     
     /**
-     * *******************TESTING NEEDED*************************
      * @return the rank of the card
      */
     public Rank getRank(){
@@ -140,7 +139,6 @@ public class Card implements Serializable, Comparable<Card> {
     }
     
     /**
-     * ****************TESTING NEEDED*****************************
      * Method to calculate the sum of two cards
      * @param a first card object
      * @param b second card object
@@ -151,7 +149,6 @@ public class Card implements Serializable, Comparable<Card> {
     }
     
     /**
-     * *****************TESTING NEEDED*****************************
      * This method determines if the two cards fulfil the blackjack combo,
      * this is done using the sum() method.
      * @param a first card object
@@ -165,33 +162,34 @@ public class Card implements Serializable, Comparable<Card> {
     
     
     /**
-     * ***********************WIP*********************************
      * Nested static comparator class that will be used to sort cards into 
      * descending order by rank
      */
-//    public static class compareAscending implements Comparator{
-//        public int compare(Card a, Card b){
-//            return (b.rank.compareTo(b.rank));
-//        }
-//    }
+    public static class compareAscending implements Comparator{
+        @Override
+        public int compare(Object a, Object b){
+            return (((Card)a).rank.ordinal() - ((Card)b).rank.ordinal());
+        }
+    }
     /**
-     * **********************WIP***********************************
      * Nested static comparator class that will be used to sort cards into
      * ascending order of suit then rank
      */
-//    public static class compareSuit implements Comparator{
-//        public int compare(Object a, Object b){
-//            
-//        }
-//    }
+    public static class compareSuit implements Comparator{
+        @Override
+        public int compare(Object a, Object b){
+            return ((Card)b).compareTo(((Card)a));
+        }
+    }
 
     /**
      * main method of the class used for testing
      */
     public static void main(String[] args) {
+        //---------- start Testing enums---------------------------
         Suit suitTest = Suit.DIAMONDS;
         Rank rankTest = Rank.TEN;
-
+        
         System.out.println(" Coolest suit is: " + suitTest);
         System.out.println(" Favorite rank is: " + rankTest);
         System.out.println(" All Possible suits are: ");
@@ -202,16 +200,77 @@ public class Card implements Serializable, Comparable<Card> {
         for (Rank r : Rank.values()) {
             System.out.println(r);
         }
+        
+        //testing previous rank method
         System.out.println("Previous value of: " + rankTest + " is: " +
                Rank.prevRank(rankTest));
+        //testing getting the int value of the rank
         System.out.println("My rank is: " + rankTest + " and it's valie is: " +
                 rankTest.getValue());
-        
+        //testing ordinal position
         System.out.println("Ordinal position of suit: " + suitTest +
                 " is: " + suitTest.ordinal());
+        //----------end Testing enums -------------------------------
         
         
-
+        //testing the Card constructor
+        Card c1 = new Card(Suit.CLUBS, Rank.ACE);
+        
+        //testing getters
+        suitTest = c1.getSuit();
+        rankTest = c1.getRank();
+        System.out.println("getSuit: " + suitTest);
+        System.out.println("getRank: " + rankTest);
+        
+        //testing toString
+        System.out.println(c1.toString());
+        
+        //creating new card objects for testing
+        Card c2 = new Card(Suit.SPADES, Rank.KING);
+        Card c3 = new Card(Suit.DIAMONDS, Rank.THREE);
+        
+        //Testing sum method
+        System.out.println("Sum valuse of c1 and c2 is: " + sum(c1, c2));
+        
+        //Testing if two cards fulfil the blackjack rule
+        System.out.println("\nTest to see if c1 and c2 result in blackjack.");
+        if (isBlackjack(c1,c2)){
+            System.out.println("BLACKJACK!");
+        }
+        else{
+            System.out.println("Not blackjack, move along.");
+        }
+        System.out.println("\nTest to see if c1 and c3 result in blackjack");
+        if (isBlackjack(c1, c3)){
+            System.out.println("BLACKJACK");
+        }
+        else{
+            System.out.println("Not blackjack, move along.");
+        }
+        
+        //creating new card onjects to test the comparators
+        Card c4 = new Card(Suit.DIAMONDS, Rank.TEN);
+        Card c5 = new Card(Suit.SPADES, Rank.TEN);
+        Card c6 = new Card(Suit.HEARTS, Rank.SIX);
+        Card c7 = new Card(Suit.CLUBS, Rank.TWO);
+        
+        ArrayList<Card> cT = new ArrayList<>();
+        cT.add(c4);
+        cT.add(c5);
+        cT.add(c6);
+        cT.add(c7);
+        System.out.println(cT.toString());
+        
+        Comparator compRank = new compareAscending();
+        Collections.sort(cT, compRank);
+        System.out.println("");
+        System.out.println(cT.toString());
+        Comparator compSuit = new compareSuit();
+        Collections.sort(cT, compSuit);
+        System.out.println("");
+        System.out.println(cT.toString());
+        
+        
     }
 
 }
