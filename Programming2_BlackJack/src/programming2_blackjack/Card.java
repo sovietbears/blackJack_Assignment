@@ -121,7 +121,7 @@ public class Card implements Serializable, Comparable<Card> {
     //custom toString method
     @Override
     public String toString() {
-        return "Suit: " + suit + " Rank: " + rank + "\n";
+        return "\nSuit: " + suit + " Rank: " + rank;
     }
     
     /** 
@@ -259,12 +259,15 @@ public class Card implements Serializable, Comparable<Card> {
         cT.add(c5);
         cT.add(c6);
         cT.add(c7);
+        System.out.println("Unsorted list.");
         System.out.println(cT.toString());
-        
+        System.out.println("\nsorted Asc");
         Comparator compRank = new compareAscending();
         Collections.sort(cT, compRank);
         System.out.println("");
         System.out.println(cT.toString());
+        
+        System.out.println("\nsorted by suit.");
         Comparator compSuit = new compareSuit();
         Collections.sort(cT, compSuit);
         System.out.println("");

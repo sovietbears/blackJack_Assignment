@@ -15,11 +15,10 @@ import programming2_blackjack.Card.Suit;
  * Class Deck simulates the deck of cards that are needed for card games
  * @author Daniel Carey
  */
-public class Deck implements Serializable, Iterator<Card> {
+public class Deck implements Serializable, Iterable<Card> {
     
     static final long serialVersionUID = 112;
     private final  LinkedList<Card> cardList;
-    private int curr = 0;
             
     /**
      * Constructor to initialise an empty collection of cards
@@ -106,24 +105,24 @@ public class Deck implements Serializable, Iterator<Card> {
         }
     }
     
-
     //--------------Iterator Commands Start---------------------
     @Override
-    public boolean hasNext() {
-        return curr < cardList.size();
-    }
+    public Iterator<Card> iterator() {
+        return new Iterator<Card>() {
+            private final Iterator<Card> it = cardList.iterator();
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
 
-    @Override
-    public Card next() {
-        return cardList.get(curr++);
+            @Override
+            public Card next() {
+               return it.next();
+            }
+            
+        };
     }
-    
-    @Override
-    public void remove(){
-        cardList.remove(curr);
-    }
-    
-    //--------------Iterator Commands End-----------------------
+//--------------Iterator Commands End-----------------------
 
     
     /**
@@ -134,7 +133,7 @@ public class Deck implements Serializable, Iterator<Card> {
     {
         return new SecondCardIterator(cardList);
     }
-    
+
     /**
      * Nested class iterator that will traverse the cards by going to 
      * every other card.
