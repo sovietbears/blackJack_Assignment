@@ -121,7 +121,7 @@ public class Card implements Serializable, Comparable<Card> {
     //custom toString method
     @Override
     public String toString() {
-        return "Suit: " + suit + "\nRank: " + rank + "\n";
+        return "Suit: " + suit + " Rank: " + rank + "\n";
     }
     
     /** 
