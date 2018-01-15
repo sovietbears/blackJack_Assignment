@@ -228,15 +228,57 @@ public class Hand implements Serializable, Iterable<Card> {
     }
 //--------------Iterator Commands End-----------------------
     
+    /**
+     * Sorts hand in decending order.
+     */
     public void sortDecending(){
         Collections.sort(handArr);
     }
     
+    /**
+     * Sorts hand in acending order
+     */
     public void sortAcending(){
         Comparator compAcending = new compareAscending();
         Collections.sort(handArr, compAcending);
     }
     
+    /**
+     * Method to count how many cards in the hand have the passed
+     * in rank
+     * @param rank you wish to count
+     * @return returns the number of times that rank is repeated
+     * in the current hand
+     */
+    public int countRank(Rank rank){
+        int rankCnt;
+        long freq = handArr.stream().filter( a -> a.getRank() == rank ).count();
+        rankCnt = (int) freq;
+        return rankCnt;
+    }
+    
+    
+    /**
+     * Method to check if the lowest hand value is larger that the limit passed 
+     * through
+     * @param limit you wish to impose
+     * @return true if lowest value of the current hand is higher than the limit
+     * else will return false.
+     */
+    public boolean isOver(int limit){
+        int minHandVal = Collections.min(this.handVal);
+        return limit < minHandVal;
+    }
+    
+    /**
+     * Method to reverse the hand the current hand
+     * @return new hand that is in reversed order
+     */
+    public ArrayList<Card> reverseList(){
+        ArrayList<Card> reverseHand = this.handArr;
+        Collections.reverse(reverseHand);
+        return reverseHand;
+    }
     
     
     
@@ -315,6 +357,13 @@ public class Hand implements Serializable, Iterable<Card> {
             Card card2 = it2.next();
             System.out.println("Card: " + card2);
         }
+        
+        
+        //Testing countRank method 
+        System.out.println("Rank count of queen: " + h3.countRank(Rank.QUEEN));
+        
+        //Testing reverseHand method
+        System.out.println("Result from reverseList metheod: " + h3.reverseList().toString());
         
     }
 
