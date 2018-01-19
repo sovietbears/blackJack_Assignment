@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package programming2_blackjack;
+package question2;
 
 /**
  *
  * @author Hattori
  */
-public class BasicPlayer {
+public class AdvancedPlayer {
     
 }

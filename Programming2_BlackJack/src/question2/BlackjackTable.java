@@ -3,12 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package programming2_blackjack;
+package question2;
 
 /**
  *
  * @author Hattori
  */
-public class AdvancedPlayer {
+public class BlackjackTable {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // TODO code application logic here
+    }
     
 }

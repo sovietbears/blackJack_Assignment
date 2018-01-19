@@ -1,4 +1,4 @@
-package programming2_blackjack;
+package question1;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import programming2_blackjack.Card.Rank;
-import programming2_blackjack.Card.Suit;
+import question1.Card.Rank;
+import question1.Card.Suit;
 
 /**
  * Class Deck simulates the deck of cards that are needed for card games
