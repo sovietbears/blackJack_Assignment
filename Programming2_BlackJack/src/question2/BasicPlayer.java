@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package question2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 import static question1.Card.isBlackjack;
 import question1.Hand;
 import question1.Card;
@@ -21,15 +16,15 @@ import question1.Card;
  * @author Daniel Carey
  */
 public class BasicPlayer implements Player, Serializable {
-    
-    private int balance;
-    private Hand playerHand;
-    private int bet;
-    private List<Card> dealerHand;
-    private Card dealerCard;
-    private boolean newDeck;
-    private boolean isBlackjack;
-    
+
+    protected int balance;
+    protected Hand playerHand;
+    protected  int bet;
+    protected List<Card> handsDealt;
+    protected Card dealerCard;
+    protected boolean newDeck;
+    protected boolean isBlackjack;
+
     static final long serialVersionUID = 1L;
 
     public BasicPlayer() {
@@ -41,7 +36,7 @@ public class BasicPlayer implements Player, Serializable {
      * Clear previous hand ready for new cards
      *
      * @return Player returns old hand
-    *
+     *
      */
     @Override
     public Hand newHand() {
@@ -58,20 +53,24 @@ public class BasicPlayer implements Player, Serializable {
      */
     @Override
     public int makeBet() {
-        this.bet = 0;
         if (balance >= 10) {
-            this.bet += 10;
+            this.bet = 10;
             return 10;
-            } 
-        else {
+        } else {
             return 0;
-            }
+        }
 
+    }
+
+    public void setBet(int n) {
+        this.bet = n;
     }
 
     /**
      * getBet: @return the bet for the current game. This must not exceed the
      * players balance
+     *
+     * @return
      */
     @Override
     public int getBet() {
@@ -80,6 +79,8 @@ public class BasicPlayer implements Player, Serializable {
 
     /**
      * getBalance: @return the players current total pot.
+     *
+     * @return
      */
     @Override
     public int getBalance() {
@@ -88,11 +89,13 @@ public class BasicPlayer implements Player, Serializable {
 
     /**
      * hit: this method should determine whether the player wants to take a
-     * card. return true if a card is required, false otherwise. 
-    *
+     * card. return true if a card is required, false otherwise.
+     *
+     * @return
      */
     @Override
     public boolean hit() {
+        System.out.println("Dealer's Card: " + this.dealerCard.toString());
         return this.getHandTotal() < 17;
     }
 
@@ -115,21 +118,21 @@ public class BasicPlayer implements Player, Serializable {
      * @return true if the player has funds remaining, false otherwise.
      */
     @Override
-    public boolean settleBet(int p) {    
-        switch(p){
+    public boolean settleBet(int p) {
+        switch (p) {
             case -1:
                 this.balance -= this.bet;
-                return this.balance >= 10;
+                return this.balance >= 1;
             case 0:
-                return this.balance >= 10;
+                return this.balance >= 1;
             case 1:
                 this.balance += this.bet;
-                return this.balance >= 10;
-            case 2: 
+                return this.balance >= 1;
+            case 2:
                 this.balance += (this.bet * 2);
-                return this.balance >= 10;
+                return this.balance >= 1;
         }
-        return this.balance >= 10; //Unreachable, uet needed.
+        return this.balance >= 10; //Unreachable, yet needed.
     }
 
     /**
@@ -139,56 +142,53 @@ public class BasicPlayer implements Player, Serializable {
      * for example ACE, THREE should return 14. ACE, THREE, TEN should return
      * 14. ACE, ACE, TWO, THREE should return 17. ACE, ACE, TEN should return
      * 12. NEED WORK ON THIS!
+     *
+     * @return
      */
     @Override
     public int getHandTotal() {
         ArrayList<Integer> vals = this.playerHand.handCalcArr();
-        Collections.sort(vals);
-        int arrSize = vals.size();
-        int dist = Math.abs(vals.get(0) - 21);
-        int index = 0;
-        if (arrSize == 1)
-        {
+        TreeSet<Integer> set = new TreeSet<Integer>(vals);
+        if (vals.size() == 1) {
             return vals.get(0);
         }
-        for (int i = 1; i < arrSize; i++) {
-            int closeDist = Math.abs(vals.get(i) - 21);
-             if (vals.get(i) < 21 && closeDist <= dist){
-                index = i;
-                dist = closeDist;
-            }
+        else if(set.floor(21) == null){
+            return set.ceiling(21);
         }
-        System.out.println("score Hand Result: " + vals.get(index));
-        
-        return vals.get(index);
+        else{
+            return set.floor(21);
+        }
     }
 
     /**
      *
      * blackjack: @return true if the current hand is a black jack (ACE, TEN or
      * PICTURE CARD)
+     *
+     * @return
      */
     @Override
     public boolean blackjack() {
         Iterator<Card> it = this.playerHand.iterator();
         Card a = it.next();
         Card b = it.next();
-        if(isBlackjack(a,b)){
+        if (isBlackjack(a, b)) {
             this.isBlackjack = true;
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
-    
-    public boolean isBlackJack(){
+
+    public boolean isBlackJack() {
         return this.isBlackjack;
     }
 
     /**
      *
      * isBust: @return true if the current hand is bust
+     *
+     * @return
      */
     @Override
     public boolean isBust() {
@@ -198,6 +198,8 @@ public class BasicPlayer implements Player, Serializable {
     /**
      *
      * getHand: @return the current hand
+     *
+     * @return
      */
     @Override
     public Hand getHand() {
@@ -219,20 +221,21 @@ public class BasicPlayer implements Player, Serializable {
      * viewCards: This method allows the dealer to show all the cards that were
      * played after a hand is finished. If the player is card counting, they
      * will need this info
+     *
+     * @param cards
      */
     @Override
     public void viewCards(List<Card> cards) {
-        this.dealerHand = cards;
+        this.handsDealt = cards;
     }
 
     /**
      * newDeck. This method is called by the dealer to tell them the deck has
-     * been reshuffled
+     * been re-shuffled
      */
     @Override
     public void newDeck() {
         this.newDeck = true;
     }
-    
 
 }

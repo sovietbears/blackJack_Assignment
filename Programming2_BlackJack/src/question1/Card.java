@@ -18,7 +18,7 @@ public class Card implements Serializable, Comparable<Card> {
     /**
      * enum that contains fields for suit of the card
      */
-    enum Suit {
+    public enum Suit {
         CLUBS, DIAMONDS, HEARTS, SPADES
     }
 
@@ -27,7 +27,7 @@ public class Card implements Serializable, Comparable<Card> {
      * values of the cards and a method that allows to retrieve the value of the
      * previous enum field in the list.
      */
-    enum Rank {
+    public enum Rank {
         TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9),
         TEN(10), JACK(10), QUEEN(10), KING(10), ACE(11);
         final int value; // value of the Rank

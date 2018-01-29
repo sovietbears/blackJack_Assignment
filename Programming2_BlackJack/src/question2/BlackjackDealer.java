@@ -2,10 +2,10 @@ package question2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 import question1.Card;
 import static question1.Card.isBlackjack;
 import question1.Deck;
@@ -19,6 +19,7 @@ import question1.Hand;
 public class BlackjackDealer implements Dealer, Serializable {
     
     private Hand dealerHand; //Stores dealer's hand
+    private List<Card> cardsPlayed; //Stores all the cards that have been played during a hand.
     private List<Player> players; //Players that are assigned to the dealer
     private List<Integer> bets; //Stores bets made by players
     private Deck deck; //Stores deck that is used for the game
@@ -35,6 +36,7 @@ public class BlackjackDealer implements Dealer, Serializable {
         this.dealerHand = new Hand();
         this.deck       = new Deck();
         this.deck.shuffle(); //Shuffles deck.
+        this.cardsPlayed= new LinkedList<Card>();
         this.players    = new LinkedList<Player>();
         this.bets       = new LinkedList<Integer>();   
         
@@ -104,11 +106,18 @@ public class BlackjackDealer implements Dealer, Serializable {
         while(itPlayer.hasNext()){
             this.checkDeck();
             p = itPlayer.next();
-            p.newHand();
             p.takeCard(this.deck.deal());
             p.takeCard(this.deck.deal());
         }
-        this.dealerHand.addCard(this.deck.deal());
+        Card dealerFirstCard = this.deck.deal();
+        this.dealerHand.addCard(dealerFirstCard);  
+        
+        Iterator<Player> itPlayer2 = this.players.iterator();
+        while (itPlayer2.hasNext()) {
+            p = itPlayer2.next();
+            p.viewDealerCard(dealerFirstCard);
+        }
+        
     }
     
     /**
@@ -184,22 +193,16 @@ public class BlackjackDealer implements Dealer, Serializable {
     @Override
     public int scoreHand(Hand h) {
         ArrayList<Integer> vals = h.handCalcArr();
-        Collections.sort(vals);
-        int arrSize = vals.size();
-        int dist = Math.abs(vals.get(0) - 21);
-        int index = 0;
-        if (arrSize == 1)
-        {
+        TreeSet<Integer> set = new TreeSet<Integer>(vals);
+        if (vals.size() == 1) {
             return vals.get(0);
         }
-        for (int i = 1; i < arrSize; i++) {
-            int closeDist = Math.abs(vals.get(i) - 21);
-             if (vals.get(i) < 21 && closeDist <= dist){
-                index = i;
-                dist = closeDist;
-            }
+        else if(set.floor(21) == null){
+            return set.ceiling(21);
         }
-        return vals.get(index);
+        else{
+            return set.floor(21);
+        }
     }
     
     
@@ -229,12 +232,13 @@ public class BlackjackDealer implements Dealer, Serializable {
         int playerScore;
         boolean pBlackjack;
         
+        
         while (itPlayer.hasNext()) {
             p = itPlayer.next();
             playerScore = this.scoreHand(p.getHand());
             //System.out.println("SETTLE BET SCORE: Player: " + playerScore + " Dealer: " + dealerScore);
             pBlackjack = p.blackjack();
-                       
+           
             if(pBlackjack && !(this.isBlackjack)){
                 p.settleBet(2);
                 //System.out.println("Player has blackjack");
@@ -260,8 +264,31 @@ public class BlackjackDealer implements Dealer, Serializable {
         }
     }
     
+    
     public void newHand(){
+        System.out.println("NEW HAND ACTIVATED");
+        Iterator<Player> it = this.players.iterator();
+        Player p;
+        Card c;
+        Hand temp;
+        while(it.hasNext()){
+            p = it.next();
+            System.out.println("PLAYERS: " + p.toString());
+            p.newHand().toString();
+//            Iterator<Card> cIt = temp.iterator();
+//            while (cIt.hasNext()) {
+//                c = cIt.next();
+//                System.out.println("Cards added. " + c.toString());
+//                this.cardsPlayed.add(c);
+//            }
+        }
+        Iterator<Player> it2 = this.players.iterator();
+        while (it2.hasNext()) {
+            p = it2.next();
+            p.viewCards(this.cardsPlayed);
+        }
         this.dealerHand.removeCollection(dealerHand);
+        this.cardsPlayed.removeAll(cardsPlayed);
     }
     
     /**

@@ -6,11 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import question1.Card.Rank;
 import question1.Card.compareAscending;
 
@@ -21,7 +17,6 @@ import question1.Card.compareAscending;
  */
 public class Hand implements Serializable, Iterable<Card> {
     
-    private HashMap<Integer, Card> handArr2;
     private ArrayList<Card> handArr;
     private ArrayList<Integer> cardRankCnt;
     private ArrayList<Integer> handVal;
@@ -31,10 +26,9 @@ public class Hand implements Serializable, Iterable<Card> {
      * Constructor initializing an empty hand
      */
     public Hand() {
-        this.handArr2 = new LinkedHashMap<>();
-        this.handArr = new ArrayList<>();
-        this.cardRankCnt = new ArrayList<>();
-        this.handVal = new ArrayList<>();
+        this.handArr = new ArrayList<Card>();
+        this.cardRankCnt = new ArrayList<Integer>();
+        this.handVal = new ArrayList<Integer>();
     }
 
     /**
@@ -66,9 +60,10 @@ public class Hand implements Serializable, Iterable<Card> {
     /**
      * Method that fills in the cardRankCnt array with Integers that represent
      * cards from handArr
+     * @return 
      */
     public ArrayList<Integer> cardRankCntArr() {
-        ArrayList<Integer> cardRankCntArr = new ArrayList<>();
+        ArrayList<Integer> cardRankCntArr = new ArrayList<Integer>();
         long freq;
         for (Card c : this.handArr) {
             freq = handArr.stream().filter(a -> a.getRank() == c.getRank()).count();
@@ -82,9 +77,10 @@ public class Hand implements Serializable, Iterable<Card> {
      * containing Integers which represent cards in hand. Also it checks if any
      * Aces are present in the array and calculates alternative values that can
      * be made with current hand. Then inserts these into handVal ArrayList
+     * @return 
      */
     public ArrayList<Integer> handCalcArr() {
-        ArrayList<Integer> cardValArr = new ArrayList<>();
+        ArrayList<Integer> cardValArr = new ArrayList<Integer>();
         int sum = 0;
         int aceCnt = 0;
         int rank = 0;
@@ -140,14 +136,7 @@ public class Hand implements Serializable, Iterable<Card> {
         this.handVal = this.handCalcArr();
 
     }
-    public void addCard2(Integer i,Card card) {
-        this.handArr2.put(i, card);
-        this.cardRankCnt = this.cardRankCntArr();
-        this.handVal = this.handCalcArr();
-
-    }
     
-
     /**
      * Method to add a collection of cards to the hand cardRankCnt and handVal
      * will be updated
@@ -249,9 +238,7 @@ public class Hand implements Serializable, Iterable<Card> {
      * Sorts hand in decending order.
      */
     public void sortDecending() {
-        Collections.sort(handArr);
-        List<Card> values = new ArrayList<>(handArr2.values());
-        
+        Collections.sort(handArr);   
     }
 
     /**
