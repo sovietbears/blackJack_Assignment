@@ -1,10 +1,13 @@
 package question2;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import question1.Card;
+import static question1.Card.isBlackjack;
 import question1.Deck;
 import question1.Hand;
 
@@ -13,26 +16,33 @@ import question1.Hand;
  * dealer who will oversee the game. 
  * @author Daniel Carey
  */
-public class BlackjackDealer implements Dealer {
+public class BlackjackDealer implements Dealer, Serializable {
     
-    private Hand dealerHand;
-    private List<Player> players;
-    private List<Integer> bets;
-    private Deck deck;
-    private boolean isBlackjack;
-
+    private Hand dealerHand; //Stores dealer's hand
+    private List<Player> players; //Players that are assigned to the dealer
+    private List<Integer> bets; //Stores bets made by players
+    private Deck deck; //Stores deck that is used for the game
+    private boolean isBlackjack = false; //Stores true if dealer has blackjack
+                                         //value is false by default.
+    static final long serialVersionUID = 2L;
+    
+    /**
+     * Constructor method for the dealer which creates dealer hand, the deck
+     * that is going to be played which in turn will be shuffled, create empty
+     * LinkedList of players and bets that the players have made.
+     */
     public BlackjackDealer(){
         this.dealerHand = new Hand();
         this.deck       = new Deck();
-        this.deck.shuffle();
+        this.deck.shuffle(); //Shuffles deck.
         this.players    = new LinkedList<Player>();
         this.bets       = new LinkedList<Integer>();   
         
     }
     
     /**
-     * Method to give the dealer access to players who are playing
-     * @param p 
+     * Method to assign players to the dealer object
+     * @param p List of players that the dealer object will interact with. 
      */
     @Override
     public void assignPlayers(List<Player> p) {
@@ -40,32 +50,52 @@ public class BlackjackDealer implements Dealer {
     }
     
     /**
-    * takeBets: Take the bets for all the assigned players
+    * Method to take bets from player objects that are assigned to the dealer.
+    * These bets will then be added to the dealer's bets LinkedList for 
+    * further processing
     */
     @Override
     public void takeBets() {
+        //Iterator to traverse through player objects
         Iterator<Player> itPlayer = this.players.iterator();
+        Player p; 
         while(itPlayer.hasNext()){
-            int bet = itPlayer.next().getBet();
+            p = itPlayer.next();
+            p.makeBet();
+            //retrive bet from player
+            int bet = p.getBet();
+            //store bet in the dealer object
             this.bets.add(bet);
         }
     }
     
+    /**
+     * Method to check if the deck has more than 1/4 cards in it.
+     * If it doesn't, new deck will be introduced, shuffeled and all the 
+     * players that are currently assigned to the dealer will be notified.
+     */
     public void checkDeck(){
         if (this.deck.size() < (52/4)) {
+            System.out.println("CURREND DECK SIZE: " + this.deck.size());
+            System.out.println("NEW DECK");
             this.deck.newDeck();
             this.deck.shuffle();
+            //Iterator to traverse players
             Iterator<Player> itPlayer = this.players.iterator();
-            Player p;
+            Player p; 
             while(itPlayer.hasNext()){
                 p = itPlayer.next();
+                //Let player know that new deck is introduced
                 p.newDeck();
             }
         }
     }
     
     /**
-    * dealFirstCards: Deal first two cards to each player, and one card to the dealer           
+    * Method to deal first two cards to the players that are currently assigned
+    * to the dealer by iterating through player objects.
+    * At each player iteration deck will be checked if it has more than 1/4 of
+    * cards present. Finally one card will be dealt to the dealer.
     **/
     @Override
     public void dealFirstCards() {
@@ -74,6 +104,7 @@ public class BlackjackDealer implements Dealer {
         while(itPlayer.hasNext()){
             this.checkDeck();
             p = itPlayer.next();
+            p.newHand();
             p.takeCard(this.deck.deal());
             p.takeCard(this.deck.deal());
         }
@@ -81,8 +112,9 @@ public class BlackjackDealer implements Dealer {
     }
     
     /**
-    *play: play the hand of player p. 
-    * Keep asking if the player wants a card until they stick or they bust
+     * Method to play the hand of player p. Keep asking if the player 
+     * wants another card until they stick or bust
+     * @param p current player object.
     * @return final score of the hand
     **/
     @Override
@@ -94,30 +126,54 @@ public class BlackjackDealer implements Dealer {
         else{
             while(p.hit() && !(p.isBust())){
                 p.takeCard(this.deck.deal());
-
+                
+               // System.out.println("Player took card" + p.getHand().toString());
+               // REMOVE ON FINAL
             }
             return p.getHandTotal();
         }
        
     }
     
-    /** playDealer: Play the dealer hand
-    * The dealer must take cards until their total is 17 or higher. 
+    /**
+     * Method to check if the dealer has a blackjack in his hand and store it 
+     * in the dealer object for further processing.
+     * @return true if the hand is blackjack false otherwise
+     */
+    public boolean blackjack(){
+        Iterator<Card> it = this.dealerHand.iterator();
+        Card a = it.next();
+        Card b = it.next();
+        
+        return isBlackjack(a,b);
+    }
+    
+    /** 
+     * Method to play the dealer's hand. The dealer will take cards until his 
+     * total score is 17 or higher. However, if the card dealt at the start of 
+     * dealer's hand equates to blackjack score of 21 will be returned and
+     * isBlackjack will be assigned true.
     * @return dealer score
     */   
     @Override
     public int playDealer() {
-        if ()
-        while (scoreHand(this.dealerHand) < 17) {
-            this.dealerHand.addCard(this.deck.deal());
+        this.dealerHand.addCard(this.deck.deal());
+        if (this.blackjack() == true){
+            isBlackjack = true;
+            return 21;
         }
-        return scoreHand(this.dealerHand);
+        else {
+            while (scoreHand(this.dealerHand) < 17) {
+                this.dealerHand.addCard(this.deck.deal());
+            }
+            return scoreHand(this.dealerHand);
+        }
     }
     
     /**
     * scoreHand: The dealer should score the player hands, not rely on the player 
     * to do it.
-    * @param h
+    * @param h dealer's or player's hand
     * @return score. Note if there are aces, this should be the highest possible 
     * value that is less than 21
     * ACE, THREE   should return 14.
@@ -127,31 +183,101 @@ public class BlackjackDealer implements Dealer {
     */    
     @Override
     public int scoreHand(Hand h) {
-        int handTotal = 0;
         ArrayList<Integer> vals = h.handCalcArr();
-        Collections.reverse(vals);
-        for (Integer val : vals) {
-            if (val <= 21) {
-                handTotal = val;
-            }
-            else{
-                handTotal = val;
+        Collections.sort(vals);
+        int arrSize = vals.size();
+        int dist = Math.abs(vals.get(0) - 21);
+        int index = 0;
+        if (arrSize == 1)
+        {
+            return vals.get(0);
+        }
+        for (int i = 1; i < arrSize; i++) {
+            int closeDist = Math.abs(vals.get(i) - 21);
+             if (vals.get(i) < 21 && closeDist <= dist){
+                index = i;
+                dist = closeDist;
             }
         }
-        return handTotal;
+        return vals.get(index);
     }
     
-    /** settleBets: This should settle all the bets at the end of the hand.
-    * 
-    */    
+    
+    /**
+     * This method will settle all the bets after dealer's turn.
+     * If player sticks on any value lower than 21 and dealer busts, the 
+     * player wins sum equal to their bet.
+     * 
+     * If dealer is not bust, the scores are compared. If dealer's hand is lower
+     * than the player then they win sum equal to their bet. Player loses if its
+     * lower than the dealer's hand.
+     * 
+     * If player and dealer have equal score the player will retain their bet.
+     * 
+     * Exception: If player has blackjack and dealer does not. The player wins
+     * twice their bet.
+     * 
+     * If player and the dealer has blackjack then it is also a push.
+     * 
+     */    
     @Override
     public void settleBets() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Iterator<Player> itPlayer = this.players.iterator();
+        
+        Player p;
+        int dealerScore = this.scoreHand(dealerHand);
+        int playerScore;
+        boolean pBlackjack;
+        
+        while (itPlayer.hasNext()) {
+            p = itPlayer.next();
+            playerScore = this.scoreHand(p.getHand());
+            //System.out.println("SETTLE BET SCORE: Player: " + playerScore + " Dealer: " + dealerScore);
+            pBlackjack = p.blackjack();
+                       
+            if(pBlackjack && !(this.isBlackjack)){
+                p.settleBet(2);
+                //System.out.println("Player has blackjack");
+            }
+            else if(!(p.isBust()) && dealerScore > 21){
+                p.settleBet(1);
+                //System.out.println("Player won with dealer bust. " + p.isBust());
+            }
+            else if(dealerScore > playerScore || p.isBust()){
+                if (!(p.settleBet(-1))){
+                   itPlayer.remove();
+                }
+                //System.out.println("Player is bust or lost.");
+            }
+            else if(dealerScore < playerScore){
+                p.settleBet(1);
+                //System.out.println("Player won, due to higher score.");
+            }
+            else if(dealerScore == playerScore){
+                p.settleBet(0);
+               //System.out.println("Scores match.");
+            }          
+        }
+    }
+    
+    public void newHand(){
+        this.dealerHand.removeCollection(dealerHand);
+    }
+    
+    /**
+     * Test method to check current cards in dealer's hand
+     * @return 
+     */
+    public Hand getDealerHand(){
+        return this.dealerHand;
     }
     
     public static void main(String[] args) {
+        
+        //Testing the constructor
         BlackjackDealer d = new BlackjackDealer();
         
+        //Assigning new players
         List<Player> players = new LinkedList<Player>();
         Player p1 = new BasicPlayer();
         Player p2 = new BasicPlayer();
@@ -163,13 +289,38 @@ public class BlackjackDealer implements Dealer {
         
         d.assignPlayers(players);
         
+        //Testing if all bets have been recorded.
         d.takeBets();
-        
+        System.out.println("\nPlayer bets.\n");
+        int pNum = 1;
+        for (Player player : players) {
+            System.out.println("player p" + pNum++ + " Balance: " + player.getBalance() + " bet is: " + player.getBet());
+        }
         d.dealFirstCards();
         
-        System.out.println("P1 hand: " + p1.getHand().toString() + 
-                "Hard card Total: " + p1.getHandTotal());
-        p1.getHand();
+        
+//        System.out.println("P1 hand: " + p1.getHand().toString() + 
+//                "Hard card Total: " + p1.getHandTotal());
+        
+        //Testing play method
+        System.out.println("\nPlayed p1 test: " + d.play(p1));
+        System.out.println("Played p2 test: " + d.play(p2));
+        System.out.println("Played p3 test: " + d.play(p3));
+        
+        //Testing blackjack and playDealer methods
+        //System.out.println("\nCurrent dealer card/s: " + d.getDealerHand().toString());
+        System.out.println("\nPlay Dealer result: " + d.playDealer());
+        System.out.println("\nCurrent dealer card/s: " + d.getDealerHand().toString());
+        //System.out.println("Bool value if dealer has blackjack." + d.blackjack());
+        
+        //Testing settle bet function
+        d.settleBets();
+        System.out.println("\nPlayer balances.\n");
+        pNum = 1;
+        for (Player player : players) {
+            System.out.println("player p" + pNum++ + " balance is: " + player.getBalance());
+            //System.out.println(player.getHand().toString());
+        }
         
     }
     

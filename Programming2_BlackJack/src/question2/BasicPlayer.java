@@ -5,6 +5,7 @@
  */
 package question2;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,14 +20,17 @@ import question1.Card;
  *
  * @author Daniel Carey
  */
-public class BasicPlayer implements Player {
-
+public class BasicPlayer implements Player, Serializable {
+    
     private int balance;
     private Hand playerHand;
     private int bet;
     private List<Card> dealerHand;
     private Card dealerCard;
     private boolean newDeck;
+    private boolean isBlackjack;
+    
+    static final long serialVersionUID = 1L;
 
     public BasicPlayer() {
         this.playerHand = new Hand();
@@ -54,13 +58,14 @@ public class BasicPlayer implements Player {
      */
     @Override
     public int makeBet() {
-        if (balance <= 10) {
-            this.balance -= 10;
+        this.bet = 0;
+        if (balance >= 10) {
             this.bet += 10;
             return 10;
-        } else {
+            } 
+        else {
             return 0;
-        }
+            }
 
     }
 
@@ -106,17 +111,25 @@ public class BasicPlayer implements Player {
      * settleBet: The value passed is positive if the player won, negative
      * otherwise.
      *
+     * @param p
      * @return true if the player has funds remaining, false otherwise.
      */
     @Override
-    public boolean settleBet(int p) {
-        if (p > 0) {
-            //Player won
+    public boolean settleBet(int p) {    
+        switch(p){
+            case -1:
+                this.balance -= this.bet;
+                return this.balance >= 10;
+            case 0:
+                return this.balance >= 10;
+            case 1:
+                this.balance += this.bet;
+                return this.balance >= 10;
+            case 2: 
+                this.balance += (this.bet * 2);
+                return this.balance >= 10;
         }
-        else{
-            //Player lost
-        }
-        return this.balance >= 10;
+        return this.balance >= 10; //Unreachable, uet needed.
     }
 
     /**
@@ -129,18 +142,25 @@ public class BasicPlayer implements Player {
      */
     @Override
     public int getHandTotal() {
-        int handTotal = 0;
         ArrayList<Integer> vals = this.playerHand.handCalcArr();
-        Collections.reverse(vals);
-        for (Integer val : vals) {
-            if (val <= 21) {
-                handTotal = val;
-            }
-            else{
-                handTotal = val;
+        Collections.sort(vals);
+        int arrSize = vals.size();
+        int dist = Math.abs(vals.get(0) - 21);
+        int index = 0;
+        if (arrSize == 1)
+        {
+            return vals.get(0);
+        }
+        for (int i = 1; i < arrSize; i++) {
+            int closeDist = Math.abs(vals.get(i) - 21);
+             if (vals.get(i) < 21 && closeDist <= dist){
+                index = i;
+                dist = closeDist;
             }
         }
-        return handTotal;
+        System.out.println("score Hand Result: " + vals.get(index));
+        
+        return vals.get(index);
     }
 
     /**
@@ -152,8 +172,18 @@ public class BasicPlayer implements Player {
     public boolean blackjack() {
         Iterator<Card> it = this.playerHand.iterator();
         Card a = it.next();
-        Card b = it.next();        
-        return isBlackjack(a,b);
+        Card b = it.next();
+        if(isBlackjack(a,b)){
+            this.isBlackjack = true;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    public boolean isBlackJack(){
+        return this.isBlackjack;
     }
 
     /**
@@ -203,5 +233,6 @@ public class BasicPlayer implements Player {
     public void newDeck() {
         this.newDeck = true;
     }
+    
 
 }
