@@ -1,17 +1,24 @@
 package question2;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import question1.Card;
-import question1.Hand;
-import static question1.Hand.removeCollection;
+import question2.Card;
+import question2.Hand;
+import static question2.Hand.removeCollection;
 
 /**
  * The main driver class that can initialize blackjack games. Made up of basic,
@@ -74,12 +81,12 @@ public class BlackjackTable implements Serializable {
         System.out.println("Dealer hand: " + this.dealer.getDealerHand().toString()
                 + "\n---------------------------------------------------------------\n");
         this.dealer.settleBets();
-      
+
         for (Player player1 : players) {
             Hand temp = new Hand(player1.newHand());
             this.cardsPlayed.addAll(temp.getCardsInHand());
         }
-        
+        this.cardsPlayed.addAll(this.dealer.getDealerHand().getCardsInHand());
         for (Player player1 : players) {
             player1.viewCards(this.cardsPlayed);
         }
@@ -101,6 +108,7 @@ public class BlackjackTable implements Serializable {
                 break;
             }
             System.out.println("\n---------------NEW HAND---------------------");
+            this.cardsPlayed = new LinkedList<Card>();
             this.dealer.takeBets();
             this.dealer.dealFirstCards();
             Iterator<Player> itPlayer = this.players.iterator();
@@ -124,16 +132,15 @@ public class BlackjackTable implements Serializable {
             System.out.println("Dealer hand: " + this.dealer.getDealerHand().toString()
                     + "\n-----------------------------------------------------------------\n");
             this.dealer.settleBets();
-            itPlayer = this.players.iterator();
-            while (itPlayer.hasNext()) {
-                p = itPlayer.next();
-                this.cardsPlayed.addAll(p.newHand().getCardsInHand());
+            for (Player player1 : players) {
+                Hand temp = new Hand(player1.newHand());
+                this.cardsPlayed.addAll(temp.getCardsInHand());
             }
-            itPlayer = this.players.iterator();
-            while (itPlayer.hasNext()) {
-                p = itPlayer.next();
-                p.viewCards(this.cardsPlayed);
+            this.cardsPlayed.addAll(this.dealer.getDealerHand().getCardsInHand());
+            for (Player player1 : players) {
+                player1.viewCards(this.cardsPlayed);
             }
+
             removeCollection(this.dealer.getDealerHand());
             this.playerBalances();
         }
@@ -145,7 +152,8 @@ public class BlackjackTable implements Serializable {
                 + "1. Go through hand.\n"
                 + "2. Go through multiple hands.\n"
                 + "3. Save Game.\n"
-                + "4. Load Game.");
+                + "4. Load Game.\n"
+                + "5. Quit Game.\n");
     }
 
     public static void choiceMessageHuman() {
@@ -154,7 +162,7 @@ public class BlackjackTable implements Serializable {
                 + "1. Play next hand.\n"
                 + "2. Quit game.\n"
                 + "3. Save Game.\n"
-                + "4. Load Game.");
+                + "4. Load Game.\n");
     }
 
     public static void basicGame() {
@@ -168,6 +176,7 @@ public class BlackjackTable implements Serializable {
                 + "2. Go through multiple hands.\n"
                 + "3. Save Game.\n"
                 + "4. Load Game.\n"
+                + "5. Quit Game.\n"
                 + "If all the players run out of funds, you will be asked"
                 + "if you would like to run another basic game simulation"
                 + "\n-----------------------------------------------------------");
@@ -186,7 +195,7 @@ public class BlackjackTable implements Serializable {
             System.out.println("<<<<<<<<<<<<New game has begun.>>>>>>>>>>>>>> \n");
             choiceMessage();
             usrInput = basicTable.sc.nextInt();
-            if (usrInput > 0 && usrInput < 5) {
+            if (usrInput > 0 && usrInput < 6) {
                 while (currentGame) {
                     switch (usrInput) {
                         case 1:
@@ -213,6 +222,10 @@ public class BlackjackTable implements Serializable {
                             basicTable.sc = new Scanner(System.in);
                             usrInput = basicTable.sc.nextInt();
                             break;
+                        case 5:
+                            runGame = false;
+                            currentGame = false;
+                            break;
                         default:
                             System.out.println("Please select from options given. "
                                     + "You said " + usrInput + " which is not allowed."
@@ -222,7 +235,7 @@ public class BlackjackTable implements Serializable {
                             break;
 
                     }
-                    if (basicTable.players.isEmpty()) {
+                    if (basicTable.players.isEmpty() && usrInput != 5) {
                         currentGame = false;
                         boolean errorCheck = true;
                         System.out.println("All players ran out of money.");
@@ -258,7 +271,8 @@ public class BlackjackTable implements Serializable {
             }
 
         }
-
+        System.out.println("Thank you for playing Blackjack. Hopefully you "
+                + "had fun. Game Terminated.");
     }
 
     public static void intermediateGame() {
@@ -272,6 +286,7 @@ public class BlackjackTable implements Serializable {
                 + "2. Go through multiple hands.\n"
                 + "3. Save Game.\n"
                 + "4. Load Game.\n"
+                + "5. Quit Game.\n"
                 + "If all the players run out of funds, you will be asked"
                 + "if you would like to run another basic game simulation"
                 + "\n-----------------------------------------------------------");
@@ -290,7 +305,7 @@ public class BlackjackTable implements Serializable {
             System.out.println("<<<<<<<<<<<<New game has begun.>>>>>>>>>>>>>> \n");
             choiceMessage();
             usrInput = intermediateTable.sc.nextInt();
-            if (usrInput > 0 && usrInput < 5) {
+            if (usrInput > 0 && usrInput < 6) {
                 while (currentGame) {
                     switch (usrInput) {
                         case 1:
@@ -317,6 +332,10 @@ public class BlackjackTable implements Serializable {
                             intermediateTable.sc = new Scanner(System.in);
                             usrInput = intermediateTable.sc.nextInt();
                             break;
+                        case 5:
+                            runGame = false;
+                            currentGame = false;
+                            break;
                         default:
                             System.out.println("Please select from options given. "
                                     + "You said " + usrInput + " which is not allowed."
@@ -326,7 +345,7 @@ public class BlackjackTable implements Serializable {
                             break;
 
                     }
-                    if (intermediateTable.players.isEmpty()) {
+                    if (intermediateTable.players.isEmpty() && usrInput != 5) {
                         currentGame = false;
                         boolean errorCheck = true;
                         System.out.println("All players ran out of money.");
@@ -362,7 +381,8 @@ public class BlackjackTable implements Serializable {
             }
 
         }
-
+        System.out.println("Thank you for playing Blackjack. Hopefully you "
+                + "had fun. Game Terminated.");
     }
 
     public static void advancedGame() {
@@ -376,6 +396,7 @@ public class BlackjackTable implements Serializable {
                 + "2. Go through multiple hands.\n"
                 + "3. Save Game.\n"
                 + "4. Load Game.\n"
+                + "5. Quit Game.\n"
                 + "If all the players run out of funds, you will be asked"
                 + "if you would like to run another basic game simulation"
                 + "\n-----------------------------------------------------------");
@@ -392,7 +413,7 @@ public class BlackjackTable implements Serializable {
             System.out.println("<<<<<<<<<<<<New game has begun.>>>>>>>>>>>>>> \n");
             choiceMessage();
             usrInput = advancedTable.sc.nextInt();
-            if (usrInput > 0 && usrInput < 5) {
+            if (usrInput > 0 && usrInput < 6) {
                 while (currentGame) {
                     switch (usrInput) {
                         case 1:
@@ -419,6 +440,10 @@ public class BlackjackTable implements Serializable {
                             advancedTable.sc = new Scanner(System.in);
                             usrInput = advancedTable.sc.nextInt();
                             break;
+                        case 5:
+                            runGame = false;
+                            currentGame = false;
+                            break;
                         default:
                             System.out.println("Please select from options given. "
                                     + "You said " + usrInput + " which is not allowed."
@@ -428,7 +453,7 @@ public class BlackjackTable implements Serializable {
                             break;
 
                     }
-                    if (advancedTable.players.isEmpty()) {
+                    if (advancedTable.players.isEmpty() && usrInput != 5) {
                         currentGame = false;
                         boolean errorCheck = true;
                         System.out.println("All players ran out of money.");
@@ -464,6 +489,8 @@ public class BlackjackTable implements Serializable {
             }
 
         }
+        System.out.println("Thank you for playing Blackjack. Hopefully you "
+                + "had fun. Game Terminated.");
 
     }
 
@@ -564,6 +591,147 @@ public class BlackjackTable implements Serializable {
                 + "had fun. Game Terminated.");
     }
 
+    public static double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    private static double handAverage(ArrayList<Integer> hands) {
+        Integer sum = 0;
+        if (!hands.isEmpty()) {
+            for (Integer hand : hands) {
+                sum += hand;
+            }
+            return round(sum.doubleValue() / hands.size(), 2);
+        }
+        return round(sum, 2);
+    }
+
+    public static void advancedGameAverage() throws IOException {
+        //Make a table for players
+        BlackjackTable advancedTable = new BlackjackTable();
+        //construct players
+        Player p1 = new BasicPlayer();
+        Player p2 = new IntermediatePlayer();
+        Player p3 = new AdvancedPlayer();
+
+        //Prepare arrays that will store average profit/loss per deck played
+        //for each player
+        ArrayList<Integer> basicAverageDeck = new ArrayList<Integer>();
+        ArrayList<Integer> intermediateAverageDeck = new ArrayList<Integer>();
+        ArrayList<Integer> advancedAverageDeck = new ArrayList<Integer>();
+
+        //Prepare arrays to store all the averages for each player
+        ArrayList<Double> basicAverageTotal = new ArrayList<Double>();
+        ArrayList<Double> intermediateTotal = new ArrayList<Double>();
+        ArrayList<Double> advancedAverageTotal = new ArrayList<Double>();
+
+        //Variables to store current player balance
+        int basicBalance;
+        int intermediateBalance;
+        int advancedBalance;
+
+        //Add player to the table
+        advancedTable.players.add(p1);
+        advancedTable.players.add(p2);
+        advancedTable.players.add(p3);
+
+        //Assign players to the dealer
+        advancedTable.dealer.assignPlayers(advancedTable.players);
+
+        //Loop with a high number of iterations
+        for (int i = 0; i < 1000; i++) {
+            //Check if players have been kicked due to insufficient balance
+            if (advancedTable.players.isEmpty()) {
+                break;
+            }
+
+            //Assign current balance
+            basicBalance = p1.getBalance();
+            intermediateBalance = p2.getBalance();
+            advancedBalance = p3.getBalance();
+
+            //Create list to store cards played
+            advancedTable.cardsPlayed = new LinkedList<Card>();
+            advancedTable.dealer.takeBets();
+            advancedTable.dealer.dealFirstCards();
+
+            //to check if new deck has been introduced
+            if (advancedTable.dealer.getDeckStatus()) {
+                //Average is calculated and added to array
+                basicAverageTotal.add(handAverage(basicAverageDeck));
+                intermediateTotal.add(handAverage(intermediateAverageDeck));
+                advancedAverageTotal.add(handAverage(advancedAverageDeck));
+                //Prepare empty arraylists
+                basicAverageDeck = new ArrayList<Integer>();
+                intermediateAverageDeck = new ArrayList<Integer>();
+                advancedAverageDeck = new ArrayList<Integer>();
+                //update current balance
+                basicBalance = p1.getBalance();
+                intermediateBalance = p2.getBalance();
+                advancedBalance = p3.getBalance();
+            }
+            //Deal cards to players
+            Iterator<Player> itPlayer = advancedTable.players.iterator();
+            Player p;
+            while (itPlayer.hasNext()) {
+                p = itPlayer.next();
+
+                advancedTable.dealer.play(p);
+            }
+            advancedTable.dealer.playDealer();
+            advancedTable.dealer.settleBets();
+
+            //Calculate profit/loss each hand and add to array list
+            basicAverageDeck.add(p1.getBalance() - basicBalance);
+            intermediateAverageDeck.add(p2.getBalance() - intermediateBalance);
+            advancedAverageDeck.add(p3.getBalance() - advancedBalance);
+
+            for (Player player1 : advancedTable.players) {
+                Hand temp = new Hand(player1.newHand());
+                advancedTable.cardsPlayed.addAll(temp.getCardsInHand());
+            }
+            advancedTable.cardsPlayed.addAll(advancedTable.dealer.getDealerHand().getCardsInHand());
+            for (Player player1 : advancedTable.players) {
+                player1.viewCards(advancedTable.cardsPlayed);
+            }
+            removeCollection(advancedTable.dealer.getDealerHand());
+        }
+
+        System.out.println("BASIC PLAYER AVERAGE:\t\t" + basicAverageTotal.toString());
+        System.out.println("INTERMEDIATE PLAYER AVERAGE:\t" + intermediateTotal.toString());
+        System.out.println("ADVANCED PLAYER AVERAGE:\t" + advancedAverageTotal.toString());
+        writeToText(basicAverageTotal, intermediateTotal, advancedAverageTotal);
+        
+    }
+    
+    public static void writeToText(ArrayList<Double> basic, 
+            ArrayList<Double> inter,ArrayList<Double> adv) 
+            throws FileNotFoundException, IOException{
+        File file = new File("averageProfits.txt");
+        FileOutputStream fileOut = new FileOutputStream(file);
+        PrintWriter pw = new PrintWriter(fileOut);
+        pw.println("Basic Player Averages");
+        for (Double n : basic) {
+            pw.println(n);
+        }
+        pw.println("Intermediate Player Averages");
+        for (Double n : inter) {
+            pw.println(n);
+        }
+        pw.println("Advanced Player Averages");
+        for (Double n : adv) {
+            pw.println(n);
+        }
+        pw.close();
+        fileOut.close();
+    }
+
     public static void saveGame(BlackjackTable table) {
         String filename = "blackJackGame.ser";
         try {
@@ -588,11 +756,56 @@ public class BlackjackTable implements Serializable {
         return tLoad;
     }
 
-    public static void main(String[] args) {
-        //basicGame();
-        //intermediateGame();
-        advancedGame();
-        //humanGame();
+    public static void main(String[] args) throws IOException {
+        System.out.println("Welcome to the Blackjack simulator.");
+        Scanner sc = new Scanner(System.in);
+        boolean choice = true;
+        int userInput;
+        do {
+            System.out.println("\nPlease choose one of the following:"
+                + "\n 1. Play basic game."
+                + "\n 2. Play intermediate game."
+                + "\n 3. Play advanced game."
+                + "\n 4. Play human game."
+                + "\n 5. Get  average profit/loss per deck using advanced game."
+                + "\n    This will save to text file as well"
+                + "\n 6. Quit.");
+            userInput = sc.nextInt();
+            switch (userInput) {
+                case 1:
+                    basicGame();
+                    break;
+                case 2:
+                    intermediateGame();
+                    break;
+                case 3:
+                    advancedGame();
+                    break;
+                case 4:
+                    humanGame();
+                    break;
+                case 5:
+                    advancedGameAverage();
+                    break;
+                case 6:
+                    choice = false;
+                    break;
+                default:
+                    System.out.println("You have entered " + userInput
+                    + " which is not one of the choices given. "
+                + "please pick again."
+                + "\n 1. Play basic game."
+                + "\n 2. Play intermediate game."
+                + "\n 3. Play advanced game."
+                + "\n 4. Play human game."
+                + "\n 5. Get  average profit/loss per deck using advanced game."
+                + "\n This will save to text file as well."
+                + "\n 6. Quit.");
+                    userInput = sc.nextInt();
+                    break;
+            }
+        }while(choice);
+        System.out.println("Thank you for playing. Program terminated.");
     }
 
 }

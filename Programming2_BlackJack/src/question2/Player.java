@@ -7,10 +7,10 @@ details: Interface for a Player for Question 2 of Programming 2
 coursework
  */
 
-import java.util.ArrayList;
+
 import java.util.List;
-import question1.Card;
-import question1.Hand;
+import question2.Card;
+import question2.Hand;
 
 /**
  *

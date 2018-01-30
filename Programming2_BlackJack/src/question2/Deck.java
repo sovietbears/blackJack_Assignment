@@ -1,4 +1,4 @@
-package question1;
+package question2;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import question1.Card.Rank;
-import question1.Card.Suit;
+import question2.Card.Rank;
+import question2.Card.Suit;
 
 /**
  * Class Deck simulates the deck of cards that are needed for card games

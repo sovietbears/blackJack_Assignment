@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
-import static question1.Card.isBlackjack;
-import question1.Hand;
-import question1.Card;
+import static question2.Card.isBlackjack;
+import question2.Hand;
+import question2.Card;
 
 /**
  * This class represents a basic Blackjack player, following simple strategy to
@@ -97,7 +97,6 @@ public class BasicPlayer implements Player, Serializable {
      */
     @Override
     public boolean hit() {
-        System.out.println("Dealer's Card: " + this.dealerCard.toString());
         return this.getHandTotal() < 17;
     }
 

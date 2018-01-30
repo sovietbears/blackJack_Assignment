@@ -1,9 +1,8 @@
 package question2;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import question1.Card;
+import question2.Card;
 
 /**
  * This class represents a player who can use simple counting techniques to give
@@ -13,10 +12,11 @@ import question1.Card;
  */
 public class AdvancedPlayer extends IntermediatePlayer implements Serializable {
 
-    private int cardCnt = 0;
+    private int cardCnt;
 
     public AdvancedPlayer() {
         super();
+        this.cardCnt = 0;
     }
 
     @Override
@@ -31,16 +31,14 @@ public class AdvancedPlayer extends IntermediatePlayer implements Serializable {
             int val;
             while (it.hasNext()) {
                 c = it.next();
-                System.out.println("Cards Advanced: " + c.toString());
                 val = c.getRank().getValue();
                 if (val >= 2 && val <= 6) {
-                    cardCnt++;
+                    ++cardCnt;
                 } else if (val == 10 || val == 11) {
-                    cardCnt--;
+                    --cardCnt;
                 }
             }
-            System.out.println("Count is: " + cardCnt);
-            if (cardCnt < 0) {
+            if (cardCnt <= 0) {
                 this.bet = 10;
                 return this.bet;
             } else {
@@ -53,24 +51,4 @@ public class AdvancedPlayer extends IntermediatePlayer implements Serializable {
             return this.bet;
         }
     }
-
-    public int softTotal() {
-
-        if (this.playerHand.countRank(Card.Rank.ACE) > 0) {
-            ArrayList<Integer> vals = this.playerHand.handCalcArr();
-            for (Integer val : vals) {
-                if (val <= 8) {
-                    return 1;
-                } else if (val == 9 || val == 10) {
-                    return 2;
-                }
-            }
-
-        } else {
-            return 0;
-        }
-
-        return 0;
-    }
-
 }

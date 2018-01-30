@@ -1,4 +1,5 @@
-package question1;
+package question2;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,9 +9,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import question1.Card.Rank;
-import question1.Card.Suit;
-import question1.Card.compareAscending;
+import question2.Card.Rank;
+import question2.Card.Suit;
+import question2.Card.compareAscending;
 
 /**
  * A class that represents the players hand that contains cards

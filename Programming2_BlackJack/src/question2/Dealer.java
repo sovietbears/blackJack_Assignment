@@ -9,7 +9,7 @@ coursework
  */
 
 import java.util.*;
-import question1.Hand;
+import question2.Hand;
 
 interface Dealer {
 

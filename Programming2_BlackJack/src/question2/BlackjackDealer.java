@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
-import question1.Card;
-import static question1.Card.isBlackjack;
-import question1.Deck;
-import question1.Hand;
+import question2.Card;
+import static question2.Card.isBlackjack;
+import question2.Deck;
+import question2.Hand;
 
 /**
  *  BlackjackDealer class will represent a a simulation of a black jack 
@@ -19,12 +19,12 @@ import question1.Hand;
 public class BlackjackDealer implements Dealer, Serializable {
     
     private Hand dealerHand; //Stores dealer's hand
-    private List<Card> cardsPlayed; //Stores all the cards that have been played during a hand.
     private List<Player> players; //Players that are assigned to the dealer
     private List<Integer> bets; //Stores bets made by players
     private Deck deck; //Stores deck that is used for the game
     private boolean isBlackjack = false; //Stores true if dealer has blackjack
                                          //value is false by default.
+    private boolean newDeck;
     static final long serialVersionUID = 2L;
     
     /**
@@ -36,7 +36,6 @@ public class BlackjackDealer implements Dealer, Serializable {
         this.dealerHand = new Hand();
         this.deck       = new Deck();
         this.deck.shuffle(); //Shuffles deck.
-        this.cardsPlayed= new LinkedList<Card>();
         this.players    = new LinkedList<Player>();
         this.bets       = new LinkedList<Integer>();   
         
@@ -49,6 +48,10 @@ public class BlackjackDealer implements Dealer, Serializable {
     @Override
     public void assignPlayers(List<Player> p) {
         this.players = p;
+    }
+    
+    public boolean getDeckStatus(){
+        return this.newDeck;
     }
     
     /**
@@ -78,8 +81,7 @@ public class BlackjackDealer implements Dealer, Serializable {
      */
     public void checkDeck(){
         if (this.deck.size() < (52/4)) {
-            System.out.println("CURREND DECK SIZE: " + this.deck.size());
-            System.out.println("NEW DECK");
+            this.newDeck = true;
             this.deck.newDeck();
             this.deck.shuffle();
             //Iterator to traverse players
@@ -103,6 +105,7 @@ public class BlackjackDealer implements Dealer, Serializable {
     public void dealFirstCards() {
         Iterator<Player> itPlayer = this.players.iterator();
         Player p;
+        this.newDeck = false;
         while(itPlayer.hasNext()){
             this.checkDeck();
             p = itPlayer.next();

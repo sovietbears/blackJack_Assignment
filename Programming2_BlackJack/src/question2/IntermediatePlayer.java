@@ -2,7 +2,7 @@ package question2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import question1.Card.Rank;
+import question2.Card.Rank;
 
 /**
  * Class that represents a slightly better version of basicPlayer who will
@@ -20,16 +20,17 @@ public class IntermediatePlayer extends BasicPlayer implements Serializable {
     public boolean hit() {
         int dCardVal = this.dealerCard.getRank().getValue();
         int handTotal = this.getHandTotal();
-        System.out.println("DEALER CARD VALUE: " + dCardVal);
-        switch (softTotal()) {
-            case 0:
-                break;
-            case 1:
-                return true;
-            case 2:
-                return false;
-            default:
-                break;
+        if (this.playerHand.countRank(Rank.ACE) > 0 && this.playerHand.getHandSize() <= 2) {
+            switch (this.softTotal()) {
+                case 0:
+                    break;
+                case 1:
+                    return true;
+                case 2:
+                    return false;
+                default:
+                    break;
+            }
         }
 
         if (dCardVal >= 7) {
@@ -43,18 +44,13 @@ public class IntermediatePlayer extends BasicPlayer implements Serializable {
 
     public int softTotal() {
 
-        if (this.playerHand.countRank(Rank.ACE) > 0) {
-            ArrayList<Integer> vals = this.playerHand.handCalcArr();
-            for (Integer val : vals) {
-                if (val <= 8) {
-                    return 1;
-                } else if (val == 9 || val == 10) {
-                    return 2;
-                }
+        ArrayList<Integer> vals = this.playerHand.handCalcArr();
+        for (Integer val : vals) {
+            if (val <= 8) {
+                return 1;
+            } else if (val == 9 || val == 10) {
+                return 2;
             }
-
-        } else {
-            return 0;
         }
 
         return 0;
