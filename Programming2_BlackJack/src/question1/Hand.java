@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import question1.Card.Rank;
 import question1.Card.compareAscending;
 
@@ -123,7 +124,11 @@ public class Hand implements Serializable, Iterable<Card> {
 
         return result;
     }
-
+    
+    public List<Card> getCardsInHand(){
+        return this.handArr;
+    }
+    
     /**
      * Method to add a single card to the hand cardRankCnt and handVal will be
      * updated
@@ -188,11 +193,11 @@ public class Hand implements Serializable, Iterable<Card> {
      * @return boolean value, true if collection is not empty and all cards have
      * been removed, false if collection is already empty.
      */
-    public boolean removeCollection(Hand h) {
+    public static  boolean removeCollection(Hand h) {
         if (!(h.handArr.isEmpty())) {
             h.handArr.clear();
-            this.cardRankCnt = this.cardRankCntArr();
-            this.handVal = this.handCalcArr();
+            h.cardRankCnt = h.cardRankCntArr();
+            h.handVal = h.handCalcArr();
             return true;
         } else {
             return false;
@@ -248,6 +253,14 @@ public class Hand implements Serializable, Iterable<Card> {
         Comparator compAcending = new compareAscending();
         Collections.sort(handArr, compAcending);
     }
+    
+    
+    
+    /**
+     * COUNT SUIT METHOD
+     * TODO: MAKE SUIT METHOD
+     */
+    
 
     /**
      * Method to count how many cards in the hand have the passed in rank

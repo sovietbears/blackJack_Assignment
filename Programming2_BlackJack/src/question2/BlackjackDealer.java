@@ -232,64 +232,31 @@ public class BlackjackDealer implements Dealer, Serializable {
         int playerScore;
         boolean pBlackjack;
         
-        
         while (itPlayer.hasNext()) {
             p = itPlayer.next();
             playerScore = this.scoreHand(p.getHand());
-            //System.out.println("SETTLE BET SCORE: Player: " + playerScore + " Dealer: " + dealerScore);
             pBlackjack = p.blackjack();
            
             if(pBlackjack && !(this.isBlackjack)){
                 p.settleBet(2);
-                //System.out.println("Player has blackjack");
             }
             else if(!(p.isBust()) && dealerScore > 21){
                 p.settleBet(1);
-                //System.out.println("Player won with dealer bust. " + p.isBust());
             }
             else if(dealerScore > playerScore || p.isBust()){
                 if (!(p.settleBet(-1))){
                    itPlayer.remove();
                 }
-                //System.out.println("Player is bust or lost.");
             }
             else if(dealerScore < playerScore){
                 p.settleBet(1);
-                //System.out.println("Player won, due to higher score.");
             }
             else if(dealerScore == playerScore){
                 p.settleBet(0);
-               //System.out.println("Scores match.");
             }          
         }
     }
     
-    
-    public void newHand(){
-        System.out.println("NEW HAND ACTIVATED");
-        Iterator<Player> it = this.players.iterator();
-        Player p;
-        Card c;
-        Hand temp;
-        while(it.hasNext()){
-            p = it.next();
-            System.out.println("PLAYERS: " + p.toString());
-            p.newHand().toString();
-//            Iterator<Card> cIt = temp.iterator();
-//            while (cIt.hasNext()) {
-//                c = cIt.next();
-//                System.out.println("Cards added. " + c.toString());
-//                this.cardsPlayed.add(c);
-//            }
-        }
-        Iterator<Player> it2 = this.players.iterator();
-        while (it2.hasNext()) {
-            p = it2.next();
-            p.viewCards(this.cardsPlayed);
-        }
-        this.dealerHand.removeCollection(dealerHand);
-        this.cardsPlayed.removeAll(cardsPlayed);
-    }
     
     /**
      * Test method to check current cards in dealer's hand

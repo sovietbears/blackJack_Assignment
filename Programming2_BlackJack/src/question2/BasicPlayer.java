@@ -3,6 +3,7 @@ package question2;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 import static question1.Card.isBlackjack;
@@ -19,7 +20,7 @@ public class BasicPlayer implements Player, Serializable {
 
     protected int balance;
     protected Hand playerHand;
-    protected  int bet;
+    protected int bet;
     protected List<Card> handsDealt;
     protected Card dealerCard;
     protected boolean newDeck;
@@ -29,6 +30,7 @@ public class BasicPlayer implements Player, Serializable {
 
     public BasicPlayer() {
         this.playerHand = new Hand();
+        this.handsDealt = new LinkedList<Card>();
         this.balance = 200;
     }
 
@@ -40,7 +42,7 @@ public class BasicPlayer implements Player, Serializable {
      */
     @Override
     public Hand newHand() {
-        Hand oldHand = this.playerHand;
+        Hand oldHand = new Hand(this.playerHand);
         this.playerHand.removeCollection(this.playerHand);
         return oldHand;
     }
@@ -151,11 +153,9 @@ public class BasicPlayer implements Player, Serializable {
         TreeSet<Integer> set = new TreeSet<Integer>(vals);
         if (vals.size() == 1) {
             return vals.get(0);
-        }
-        else if(set.floor(21) == null){
+        } else if (set.floor(21) == null) {
             return set.ceiling(21);
-        }
-        else{
+        } else {
             return set.floor(21);
         }
     }

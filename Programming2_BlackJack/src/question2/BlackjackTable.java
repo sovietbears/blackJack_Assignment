@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import question1.Card;
+import question1.Hand;
+import static question1.Hand.removeCollection;
 
 /**
  * The main driver class that can initialize blackjack games. Made up of basic,
@@ -20,6 +23,7 @@ public class BlackjackTable implements Serializable {
 
     private List<Player> players;
     private BlackjackDealer dealer;
+    private List<Card> cardsPlayed;
     private transient Scanner sc;
     private static final int MAX_PLAYERS = 8;
     private static final int MAX_BET = 500;
@@ -33,6 +37,7 @@ public class BlackjackTable implements Serializable {
     public BlackjackTable() {
         this.players = new LinkedList<Player>();
         this.dealer = new BlackjackDealer();
+        this.cardsPlayed = new LinkedList<Card>();
         this.sc = new Scanner(System.in);
     }
 
@@ -48,13 +53,12 @@ public class BlackjackTable implements Serializable {
 
     public void perHand() {
         System.out.println("\n---------------NEW HAND---------------------");
+        this.cardsPlayed = new LinkedList<Card>();
         this.dealer.takeBets();
         this.dealer.dealFirstCards();
         Iterator<Player> itPlayer = this.players.iterator();
         Player p;
-
         int player = 1;
-
         while (itPlayer.hasNext()) {
             p = itPlayer.next();
             this.dealer.play(p);
@@ -62,16 +66,25 @@ public class BlackjackTable implements Serializable {
                     + "---------------------Player " + player++ + "-----------------------\n"
                     + " Current bet: " + p.getBet());
             System.out.println("hand is " + p.getHand().toString()
-                    +"\n--------------------------------------------------------\n");
+                    + "\n--------------------------------------------------------\n");
         }
-
         this.dealer.playDealer();
         System.out.println("\n-------------------------Dealer-----------------------------------\n"
                 + "Dealer score: " + this.dealer.scoreHand(this.dealer.getDealerHand()));
         System.out.println("Dealer hand: " + this.dealer.getDealerHand().toString()
-        + "\n---------------------------------------------------------------\n");
+                + "\n---------------------------------------------------------------\n");
         this.dealer.settleBets();
-        this.dealer.newHand();
+      
+        for (Player player1 : players) {
+            Hand temp = new Hand(player1.newHand());
+            this.cardsPlayed.addAll(temp.getCardsInHand());
+        }
+        
+        for (Player player1 : players) {
+            player1.viewCards(this.cardsPlayed);
+        }
+
+        removeCollection(this.dealer.getDealerHand());
         this.playerBalances();
     }
 
@@ -99,19 +112,29 @@ public class BlackjackTable implements Serializable {
                 p = itPlayer.next();
                 this.dealer.play(p);
                 System.out.println(""
-                    + "---------------------Player " + player++ + "-----------------------\n"
-                    + " Current bet: " + p.getBet());
-            System.out.println("hand is " + p.getHand().toString()
-                    +"\n-------------------------------------------------------\n");
+                        + "---------------------Player " + player++ + "-----------------------\n"
+                        + " Current bet: " + p.getBet());
+                System.out.println("hand is " + p.getHand().toString()
+                        + "\n-------------------------------------------------------\n");
             }
 
             this.dealer.playDealer();
             System.out.println("\n-------------------------Dealer-----------------------------------\n"
-                + "Dealer score: " + this.dealer.scoreHand(this.dealer.getDealerHand()));
-        System.out.println("Dealer hand: " + this.dealer.getDealerHand().toString()
-        + "\n-----------------------------------------------------------------\n");
+                    + "Dealer score: " + this.dealer.scoreHand(this.dealer.getDealerHand()));
+            System.out.println("Dealer hand: " + this.dealer.getDealerHand().toString()
+                    + "\n-----------------------------------------------------------------\n");
             this.dealer.settleBets();
-            this.dealer.newHand();
+            itPlayer = this.players.iterator();
+            while (itPlayer.hasNext()) {
+                p = itPlayer.next();
+                this.cardsPlayed.addAll(p.newHand().getCardsInHand());
+            }
+            itPlayer = this.players.iterator();
+            while (itPlayer.hasNext()) {
+                p = itPlayer.next();
+                p.viewCards(this.cardsPlayed);
+            }
+            removeCollection(this.dealer.getDealerHand());
             this.playerBalances();
         }
     }
@@ -341,7 +364,7 @@ public class BlackjackTable implements Serializable {
         }
 
     }
-    
+
     public static void advancedGame() {
         int usrInput;
         boolean runGame = true;
@@ -568,7 +591,7 @@ public class BlackjackTable implements Serializable {
     public static void main(String[] args) {
         //basicGame();
         //intermediateGame();
-         advancedGame();
+        advancedGame();
         //humanGame();
     }
 

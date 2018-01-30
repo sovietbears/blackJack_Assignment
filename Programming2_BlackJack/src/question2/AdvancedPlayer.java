@@ -11,7 +11,7 @@ import question1.Card;
  *
  * @author Daniel Carey
  */
-public class AdvancedPlayer extends BasicPlayer implements Serializable {
+public class AdvancedPlayer extends IntermediatePlayer implements Serializable {
 
     private int cardCnt = 0;
 
@@ -25,7 +25,7 @@ public class AdvancedPlayer extends BasicPlayer implements Serializable {
             cardCnt = 0;
             this.newDeck = false;
         }
-        if (this.handsDealt != null){
+        if (this.handsDealt != null && !this.handsDealt.isEmpty()){
             Iterator<Card> it = this.handsDealt.iterator();
             Card c;
             int val;
@@ -52,31 +52,6 @@ public class AdvancedPlayer extends BasicPlayer implements Serializable {
             this.bet = 10;
             return this.bet;
         }
-    }
-
-    @Override
-    public boolean hit() {
-        int dCardVal = this.dealerCard.getRank().getValue();
-        int handTotal = this.getHandTotal();
-        System.out.println("DEALER CARD VALUE: " + dCardVal);
-        switch (softTotal()) {
-            case 0:
-                break;
-            case 1:
-                return true;
-            case 2:
-                return false;
-            default:
-                break;
-        }
-
-        if (dCardVal >= 7) {
-            return handTotal < 17;
-        } else if (dCardVal <= 6) {
-            return handTotal < 12;
-        }
-
-        return false;
     }
 
     public int softTotal() {
